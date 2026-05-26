@@ -119,6 +119,8 @@ st.markdown(
                 padding-left: 0px;
                 text-align: left;
             }
+            .colHeight { max-height: 40vh; overflow-y: auto; text-align: center; }
+            .pTitle { font-weight: bold; color: #FF4B4B; margin-bottom: 0.5em; }
     </style>""",
     unsafe_allow_html=True,
 )
@@ -368,6 +370,8 @@ if "loaded_investigation" in st.session_state and not run_button:
 
 # Status + result section placeholders
 status_slot = st.empty()
+_stat_cols = st.columns(3)
+p1, p2, p3 = [col.empty() for col in _stat_cols]
 notes_placeholder = st.empty()
 sources_placeholder = st.empty()
 findings_placeholder = st.empty()
@@ -415,6 +419,20 @@ if run_button and query:
     # Cap filtered results before scraping
     if len(st.session_state.filtered) > max_scrape:
         st.session_state.filtered = st.session_state.filtered[:max_scrape]
+
+    # Stat cards — show immediately after filtering
+    p1.container(border=True).markdown(
+        f"<div class='colHeight'><p class='pTitle'>Refined Query</p><p>{st.session_state.refined}</p></div>",
+        unsafe_allow_html=True,
+    )
+    p2.container(border=True).markdown(
+        f"<div class='colHeight'><p class='pTitle'>Search Results</p><p>{len(st.session_state.results)}</p></div>",
+        unsafe_allow_html=True,
+    )
+    p3.container(border=True).markdown(
+        f"<div class='colHeight'><p class='pTitle'>Filtered Results</p><p>{len(st.session_state.filtered)}</p></div>",
+        unsafe_allow_html=True,
+    )
 
     # Stage 5 - Scrape content
     with status_slot.container():
